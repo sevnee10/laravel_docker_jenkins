@@ -1,36 +1,31 @@
 pipeline {
-    agent any
-    options {
-        buildDiscarder(logRotator(numToKeepStr: '5'))
+  agent { label 'linux' }
+  options {
+    buildDiscarder(logRotator(numToKeepStr: '5'))
+  }
+  environment {
+    DOCKERHUB_CREDENTIALS = credentials('rickyca-dockerhub')
+  }
+  stages {
+    stage('Build') {
+      steps {
+        sh 'docker build -t rickyca/rc-alpine:latest .'
+      }
     }
-    environment {
-        DOCKERHUB_CREDENTIALS = credentials('rickyca-dockerhub')
+    stage('Login') {
+      steps {
+        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+      }
     }
-    stages {
-        stage("Acceptance test curl") {
-            steps {
-                sh "chmod +x ./jenkins/build.sh ./jenkins/login.sh ./jenkins/push.sh ./jenkins/logout.sh"
-            }
-        }
-        stage('Build') {
-            steps {
-                sh './jenkins/build.sh'
-            }
-        }
-        stage('Login') {
-            steps {
-                sh './jenkins/login.sh'
-            }
-        }
-        stage('Push') {
-            steps {
-                sh './jenkins/push.sh'
-            }
-        }
+    stage('Push') {
+      steps {
+        sh 'docker push rickyca/rc-alpine:latest'
+      }
     }
-    post {
-        always {
-            sh './jenkins/logout.sh'
-        }
+  }
+  post {
+    always {
+      sh 'docker logout'
     }
+  }
 }
