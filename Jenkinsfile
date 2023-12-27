@@ -7,11 +7,11 @@ pipeline {
     DOCKERHUB_CREDENTIALS = credentials('rickyca-dockerhub')
   }
   stages {
-    stage('Build') {
-      steps {
-        sh 'docker build -t rickyca/rc-alpine:latest .'
-      }
-    }
+    // stage('Build') {
+    //   steps {
+    //     sh 'docker build -t rickyca/rc-alpine:latest .'
+    //   }
+    // }
     stage('Login') {
       steps {
         sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
