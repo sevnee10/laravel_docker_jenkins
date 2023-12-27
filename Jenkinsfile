@@ -7,12 +7,11 @@ pipeline {
         DOCKERHUB_CREDENTIALS = credentials('rickyca-dockerhub')
     }
     stages {
-        // stage("Acceptance test curl") {
-        //     steps {
-        //         sleep 20
-        //         sh "chmod +x ./jenkins/build.sh ./jenkins/login.sh ./jenkins/push.sh ./jenkins/logout.sh"
-        //     }
-        // }
+        stage("Acceptance test curl") {
+            steps {
+                sh "chmod +x ./jenkins/build.sh ./jenkins/login.sh ./jenkins/push.sh ./jenkins/logout.sh"
+            }
+        }
         stage('Build') {
             steps {
                 sh './jenkins/build.sh'
