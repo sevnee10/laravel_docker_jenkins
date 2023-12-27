@@ -1,31 +1,37 @@
 pipeline {
-  agent any
-  options {
-    buildDiscarder(logRotator(numToKeepStr: '5'))
-  }
-  environment {
-    DOCKERHUB_CREDENTIALS = credentials('rickyca-dockerhub')
-  }
-  stages {
-    stage('Build') {
-      steps {
-        sh './jenkins/build.sh'
-      }
+    agent any
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '5'))
     }
-    stage('Login') {
-      steps {
-        sh './jenkins/login.sh'
-      }
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('rickyca-dockerhub')
     }
-    stage('Push') {
-      steps {
-        sh './jenkins/push.sh'
-      }
+    stages {
+        stage("Acceptance test curl") {
+            steps {
+                sleep 20
+                sh "chmod +x ./jenkins/build.sh ./jenkins/login.sh ./jenkins/push.sh ./jenkins/logout.sh"
+            }
+        }
+        stage('Build') {
+            steps {
+                sh './jenkins/build.sh'
+            }
+        }
+        stage('Login') {
+            steps {
+                sh './jenkins/login.sh'
+            }
+        }
+        stage('Push') {
+            steps {
+                sh './jenkins/push.sh'
+            }
+        }
     }
-  }
-  post {
-    always {
-      sh './jenkins/logout.sh'
+    post {
+        always {
+            sh './jenkins/logout.sh'
+        }
     }
-  }
 }
